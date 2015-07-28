@@ -56,16 +56,16 @@
       reverse
       (recur (+ (* reverse 10) (mod remaining 10)) (bigint (/ remaining 10)) ))))
 
-(defn not-improved-is-palindrome? [n]
+(defn is-palindrome-v2? [n]
   "instead of isolating digits and iterating from both ends we can generate the reverse of the
   number and compare it to itself"
   (= n (reverse-number n)))
 
-; the original appears to be almost twice as fast (profiled with criterium/time-body), lets try and figure out why:
-; for the second version reverse-number is doing all the work and is O(n) which is the best we can do, so we must
-; assume for these rellatively small inputs, the contants are killing us.  reverse-number uses 4 arithmetic operations
-; and a cast to int (ignore the bigint for now, the results were approximately the same with just int).  
-
+; the original appears to be almost twice as fast (profiled with criterium/time-body). in v2 and v1 are both
+; O(n). In v2 reverse-number does all the work and uses 4 arithmetic operations and a cast to int (ignore the
+; implications of bigint for now, the results were approximately the same with just int). In v1 we have 3
+; arithmetic functions in get-digit (including Math/pow that problably reduces to 2^(y*log2(x))), and 2 more
+; increments in the top function.  So at first glance I would have thought the the second might be faster..
 
 
 (defn factor-of? [p q] (= 0 (mod p q)))
@@ -99,3 +99,4 @@
     (range (square upper-bound) (square lower-bound) -1)))
 ;=> 906609
 
+;; ways to improve: try enumerating by number
