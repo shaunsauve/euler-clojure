@@ -11,7 +11,7 @@
     true
     (let [next-factor (first factors)]
       (if (= 0 (mod number next-factor))
-        (factor-of? (rest factors) number)
+        (factor-of-all? (rest factors) number)
         false))))
 
 (defn factor-of-any?
@@ -21,7 +21,7 @@
     (let [next-factor (first factors)]
       (if (= 0 (mod number next-factor))
         true
-        (factor-of? (rest factors) number)))))
+        (factor-of-any? (rest factors) number)))))
 
 (defn sum-of-factors
   [factors limit]
@@ -35,3 +35,4 @@
 
 
 (sum-of-factors [3 5] 1000)
+;=> 233168

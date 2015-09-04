@@ -12,8 +12,6 @@
 ; Find the difference between the sum of the squares of the first one hundred natural numbers and
 ; the square of the sum.
 
-
-
 (defn sum-of-squares [coll]
   (reduce + (map #(* % %) coll)))
 
@@ -25,6 +23,10 @@
 
 (square-of-sums (range 1 11))
 ;=> 3025
+
+(let [coll (range 1 101)]
+  (- (square-of-sums coll) (sum-of-squares coll)))
+;=> 25164150
 
 (loop [iteration 1]
   (if (< iteration 15)
@@ -51,11 +53,29 @@
 ; 13 : 8281 - 819 = 7462
 ; 14 : 11025 - 1015 = 10010
 
-
 ; = (1 + 2 + .. + n)^2 - (1^2 + 2^2 + .. + n^2)
-; = (1 + 2 + .. + n)(1 + 2 + .. + n) - (1^2 + 2^2 + .. + n^2)
-; = (1*1 + 1*2 + .. + 1*n) + (2*1 + 2*2 + .. + 2*n) + .. + (1*n + 2*n + .. + n*n) - (1*1 + 2*2 + .. + n*n)
-; = (xxx + 1*2 + .. + 1*n) + (2*1 + xxx + .. + 2*n) + .. + (1*n + 2*n + .. + xxx) - (xxx + xxx + .. + xxx)
-; = (1*2 + . + 1*n) + (2*1 + xxx + .. + 2*n) + .. + (1*n + 2*n + .. + xxx) - (xxx + xxx + .. + xxx)
+; = (1 + 2 + .. + n)(1 + 2 + .. + n-1 + n) - (1^2 + 2^2 + .. + n-1^2 + n^2)
+; = (1*1 + 1*2 + .. + 1*n) + (2*1 + 2*2 + .. + 2*n) + .. + (1*n + 2*n + .. + n-1*n + n*n) - (1*1 + 2*2 + .. + n-1*n-1 + n*n)
+; = (xxx + 1*2 + .. + 1*n) + (2*1 + xxx + .. + 2*n) + .. + (1*n + 2*n + .. + n-1*n + xxx) - (xxx + xxx + .. + xxxxxxx + xxx)
+; what am i doing again.. ?
 
-; = 2*(1*2 + 1*3 + 1*4 + .. + 1*n) + 2*
+; realization #1: sum(n) = n(n + 1)/2 which is widely known. Consider the range from 1 to 100.
+;   If you split the series evenly and starting from both ends you pairs elements from the first
+;   half with elements from the second you get:
+;   (1, 100), (2, 99), (3, 98), (4, 97) ... (50, 51) where the sum of any pair is equal to 101.
+;   Generally we recognize that there are n/2 pairs, and each of them sums to n + 1.  So
+;   (n + 1) * n/2 = sum of all pairs sums = sum of all numbers in the range
+
+(#(let [sum (/ (* % (+ % 1)) 2)]
+   (* sum sum)) 100)
+;=> 25502500
+
+(defn square [n] (* n n))
+
+(#(->
+   (+ % 1)
+   (* %)
+   (/ 2)
+   (square)) 100)
+;=> 25502500
+
